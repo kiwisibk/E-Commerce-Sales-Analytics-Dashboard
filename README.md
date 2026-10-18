@@ -1,140 +1,79 @@
-# E-Commerce Sales & Customer Insights Dashboard
+# 📊 PMO Portfolio Management Dashboard
 
-An enterprise-grade modular data analysis pipeline and interactive [Streamlit](https://streamlit.io/) dashboard designed to analyze Brazilian e-commerce performance, customer distributions, and fulfillment trends based on the [Olist Brazilian E-Commerce public dataset](https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce).
+[![Python Version](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://www.python.org/)
+[![Streamlit](https://img.shields.io/badge/Streamlit-1.54.0-FF4B4B.svg)](https://streamlit.io/)
+[![Plotly](https://img.shields.io/badge/Plotly-6.5.2-3F4F75.svg)](https://plotly.com/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
+An enterprise-grade, modular Project Management Office (PMO) analytics platform and interactive [Streamlit](https://streamlit.io/) dashboard designed to provide executive visibility into organizational project portfolios, Gantt execution schedules, financial budget utilization, and RAG health governance.
 
 ---
 
 ## 🌟 Key Features
 
-- **Automated Kaggle Ingestion (`src/fetch_data.py`)**:
-  - Secure and dynamic cross-platform path resolution using Python's `pathlib`.
-  - Automatic download and archive extraction of `olistbr/brazilian-ecommerce` via the Kaggle API.
-  - File existence verification preventing redundant downloads.
-  - Offline demo sample generator (`--generate-sample`) for instant evaluation without API credentials.
-- **High-Performance Data Engineering (`src/data_processing.py`)**:
-  - Joins order header attributes (`olist_orders_dataset.csv`), item financials (`olist_order_items_dataset.csv`), and customer geolocation (`olist_customers_dataset.csv`).
-  - Order-level aggregation of revenue, shipping freight, and unit item counts.
-  - Temporal feature extraction (year, month, quarter, day of week) and Brazilian state normalization.
-  - Optimized data loading with Streamlit caching (`@st.cache_data`).
+- **Synthetic Data Engineering (`src/generate_pmo_data.py`)**:
+  - Automated generation of realistic enterprise project portfolios using `Faker`, `NumPy`, and `Pandas`.
+  - Realistic multi-factor modeling of project budgets, actual expenditures, completion percentages, lifecycle phases, and RAG health statuses (`Green`, `Amber`, `Red`).
+  - Dynamic, secure directory and path resolution using Python's standard `pathlib`.
+  - Deterministic reproducibility via configurable random seeds and CLI parameterization (`--num-projects`, `--seed`, `--output`).
+
+- **High-Performance Data Processing (`src/data_processing.py`)**:
+  - Robust type validation, datetime sanitization, and automated fallback data synthesis.
+  - Derived business intelligence metrics: budget variance, budget utilization percentage, project duration, and health indices.
+  - Standardized hex color mapping for RAG health governance (`#10b981`, `#f59e0b`, `#ef4444`).
+  - Sub-second dashboard load times powered by Streamlit caching (`@st.cache_data`).
+
 - **Interactive Executive Dashboard (`app.py`)**:
-  - **Dynamic Sidebar Controls**: Filter by year, purchase month, custom calendar date range, order status, and Brazilian states (UF).
-  - **Tab 1: Sales Performance & Time Series**:
-    - Executive KPI Cards: Total Revenue (*Gesamtumsatz*), Order Count (*Anzahl Bestellungen*), Average Order Value (AOV), Total Items Sold, and Units per Order.
-    - Interactive dual-axis Plotly time series chart showing sales revenue and order volume trends with toggleable granularity (Monthly, Weekly, Daily).
-  - **Tab 2: Geographic Insights**:
-    - Ranked Plotly horizontal bar chart of top Brazilian states with revenue, percentage market share, and average basket sizes.
-    - Ranked breakdown of top municipal cities by revenue.
-  - **Tab 3: Raw Dataset Explorer**:
-    - Embedded inside a collapsible `st.expander` container as required.
-    - Interactive `st.dataframe()` with search capabilities across Order IDs, Customer IDs, and Cities.
-    - One-click CSV export of filtered analytical records.
+  - **Dynamic Sidebar Controls**: Filter by project status, RAG health, project manager, department, custom date range horizon, and real-time free-text keyword search.
+  - **Executive KPI Cards**: Real-time totals for Planned Budget, Actual Spend, Net Budget Variance, Active vs. Total Projects, and Overall Portfolio Health (% Green).
+  - **Tab 1: Portfolio Overview**:
+    - Interactive Plotly Gantt timeline chart with dynamic sorting, RAG color coding, detailed hover cards, and a real-time calendar marker for today's date.
+    - Strategic priority and lifecycle completion breakdown charts.
+  - **Tab 2: Budget & Health**:
+    - Project health distribution donut chart (RAG breakdown).
+    - Planned Budget vs. Actual Spend comparison grouped by organizational department.
+    - Project risk matrix scatter plot (Budget Utilization vs. Completion Progress) highlighting early warning anomalies and projects exceeding 100% budget.
+    - Escalated initiatives alert panel for red projects needing PMO intervention.
+  - **Tab 3: Raw PMO Data Explorer**:
+    - Embedded within a collapsible `st.expander("🔍 Explore Raw PMO Data")`.
+    - Interactive `st.dataframe()` with custom column formatting (currency formatting, progress indicators, date formatters).
+    - One-click CSV export of the active filtered portfolio.
+
+---
+
+## 📸 Dashboard Screenshots
+
+### 1. Project Portfolio Timeline (Gantt Schedule)
+![Gantt Chart](images/gantt-chart.png)
+
+### 2. Portfolio Financials & Health Distribution
+![Budget and Health](images/budget-health.png)
+
+### 3. Risk Matrix (Budget Utilization vs. Progress)
+![Risk Matrix](images/risk-matrix.png)
 
 ---
 
 ## 🏗️ Project Architecture
 
 ```text
-E-Commerce-Sales-Analytics-Dashboard/
+PMO-Portfolio-Management-Dashboard/
 │
-├── .gitignore                      # Git ignore rules for virtual environments, caches, and raw CSVs
-├── LICENSE                         # Repository license
-├── README.md                       # Comprehensive project documentation
-├── requirements.txt                # Python project dependencies
-├── app.py                          # Streamlit dashboard entry point
+├── .gitignore                   # Version control exclusions for cache & virtual envs
+├── LICENSE                      # Project open source license
+├── README.md                    # Comprehensive documentation and quickstart
+├── requirements.txt             # Python project dependencies
+├── pytest.ini                   # Pytest test suite configuration
+├── app.py                       # Main Streamlit dashboard application entry point
 │
-├── data/                           # Data storage folder
-│   ├── .gitkeep                    # Directory tracking placeholder
-│   ├── olist_orders_dataset.csv
-│   ├── olist_order_items_dataset.csv
-│   └── olist_customers_dataset.csv
+├── data/                        # Dynamic dataset storage directory
+│   ├── .gitkeep                 # Folder persistence placeholder
+│   └── pmo_projects.csv         # Generated synthetic PMO portfolio dataset
 │
-└── src/                            # Modular Python backend package
-    ├── __init__.py                 # Package initializer
-    ├── fetch_data.py               # Kaggle API automated ingestion routine
-    └── data_processing.py          # Data cleaning, aggregation, merging, and caching
-```
-
----
-
-## 🚀 Quickstart Guide
-
-### 1. Prerequisites & Virtual Environment
-
-Ensure Python 3.10+ is installed on your system.
-
-```bash
-# Clone the repository
-git clone https://github.com/kiwisibk/E-Commerce-Sales-Analytics-Dashboard.git
-cd E-Commerce-Sales-Analytics-Dashboard
-
-# Create and activate a virtual environment
-python -m venv .venv
-
-# Windows (PowerShell):
-.\.venv\Scripts\Activate.ps1
-# Linux / macOS:
-source .venv/bin/activate
-
-# Install project dependencies
-pip install -r requirements.txt
-```
-
-### 2. Kaggle API Configuration & Data Ingestion
-
-#### Option A: Download Official Dataset from Kaggle
-
-1. Download your API credentials token (`kaggle.json`) from your Kaggle account settings:
-   - Go to [kaggle.com/settings](https://www.kaggle.com/settings) -> **API** -> **Create New Token**.
-   - Move `kaggle.json` to `~/.kaggle/kaggle.json` (on Windows: `C:\Users\<Username>\.kaggle\kaggle.json`).
-   - *Alternatively, set environment variables `KAGGLE_USERNAME` and `KAGGLE_KEY`.*
-2. Execute the ingestion script:
-
-```bash
-python src/fetch_data.py
-```
-
-#### Option B: Offline Demo / Instant Sample Data
-
-If you want to test the dashboard immediately without Kaggle credentials:
-
-```bash
-python src/fetch_data.py --generate-sample
-```
-
-### 3. Launching the Streamlit Dashboard
-
-Run the Streamlit application:
-
-```bash
-streamlit run app.py
-```
-
-The application will launch in your default web browser at `http://localhost:8501`.
-
----
-
-## 📊 Analytical Data Model
-
-The pipeline aggregates and normalizes three relational datasets into a single analytical dataframe:
-
-| Raw Dataset | Key Join Field | Attributes Extracted |
-| :--- | :--- | :--- |
-| `olist_orders_dataset.csv` | `order_id`, `customer_id` | `order_status`, `order_purchase_timestamp`, `order_delivered_customer_date` |
-| `olist_order_items_dataset.csv` | `order_id` | Aggregated `total_revenue` (`sum(price)`), `total_freight`, `items_count` |
-| `olist_customers_dataset.csv` | `customer_id` | `customer_city`, `customer_state` (UF), `state_name` |
-
----
-
-## 🛠️ Technology Stack
-
-- **UI & Dashboarding**: [Streamlit](https://streamlit.io/)
-- **Data Manipulation**: [Pandas](https://pandas.pydata.org/), [NumPy](https://numpy.org/)
-- **Interactive Visualizations**: [Plotly](https://plotly.com/python/)
-- **Data Ingestion**: [Kaggle Python API](https://github.com/Kaggle/kaggle-api)
-- **Filesystem Management**: Standard Library `pathlib`
-
----
-
-## 📄 License
-
-This project is licensed under the terms specified in the [LICENSE](LICENSE) file.
+├── src/                         # Modular business logic and data engineering package
+│   ├── __init__.py              # Python package initializer
+│   ├── generate_pmo_data.py     # Faker-based synthetic PMO data generation script
+│   └── data_processing.py       # Caching, datetime sanitization, RAG coloring & KPIs
+│
+└── tests/                       # Automated unit and integration test suite
+    └── test_pmo_dashboard.py    # Test specifications for generation, processing & filtering
